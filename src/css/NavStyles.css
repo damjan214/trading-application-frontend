@@ -1,0 +1,30 @@
+.nav-pills {
+    display: flex;
+    list-style: none;
+    padding-left: 0;
+}
+
+.nav-item {
+    margin-right: 10px; /* space between nav items */
+}
+
+.nav-link {
+    color: #345B6F;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.nav-item.active,
+.nav-link:hover,
+.nav-link:focus {
+    color: #FFFFFF;
+    background-color: #34C8C1;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .nav-link:hover,
+.nav-pills .nav-link:focus {
+    color: #FFFFFF;
+    background-color: #34C8C1;
+}
