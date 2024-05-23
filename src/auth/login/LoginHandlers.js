@@ -1,13 +1,11 @@
 import {useState} from "react";
 import {useApiAuth} from "../../core/ApiAuth";
-import {useNavigate} from "react-router-dom";
 
 export function useLoginHandlers() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loginFailed, setLoginFailed] = useState(false);
 
-    const navigate = useNavigate();
     const {login} = useApiAuth();
 
     const handleUsernameChange = (event) => {
@@ -22,7 +20,7 @@ export function useLoginHandlers() {
         event.preventDefault();
         login(username, password).then(response => {
             if (response.status === 200) {
-                navigate('/menu')
+                window.location.href = '/stocks';
             }
             else {
                 setLoginFailed(true);

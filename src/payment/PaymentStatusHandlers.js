@@ -1,39 +1,53 @@
 import {useEffect, useState} from "react";
-import {useNavigate, useLocation} from "react-router-dom";
 import {useApiService} from "../core/ApiService";
+import {useLocation} from "react-router-dom";
 
 export function usePaymentStatusHandlers() {
-    const navigate = useNavigate();
     const location = useLocation();
     const {confirmPayment} = useApiService();
     const [isSuccess, setIsSuccess] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
-        setIsSuccess('')
+        let isMounted = true;
+        setIsSuccess('');
+
         const query = new URLSearchParams(location.search);
         const sessionId = query.get('session_id');
-        if(sessionId){
-            confirmPayment(sessionId).then(response => {
-                if(response.status === 200){
-                    setIsSuccess('success');
+
+        const verifyPayment = async () => {
+            if (sessionId) {
+                try {
+                    const response = await confirmPayment(sessionId);
+                    if (response.status === 200 && isMounted) {
+                        setIsSuccess('success');
+                    } else if (isMounted) {
+                        setIsSuccess('failed');
+                        setErrorMessage(response.response.data.message);
+                    }
+                } catch (error) {
+                    if (isMounted) {
+                        console.log(error.response.data.message);
+                    }
                 }
-                else{
-                    setIsSuccess('failed');
-                    setErrorMessage(response.response.data.message)
-                }
-            }).catch(error => {
-                console.log(error.response.data.message);
-            });
-            setTimeout(() => {
-                navigate('/menu');
+
+                setTimeout(() => {
+                    if (isMounted) {
+                        window.location.href = '/stocks';
+                    }
+                }, 8000);
             }
-            , 8000);
-        }
-    }, []);
+        };
+
+        verifyPayment();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [location.search]);
 
     const handleReturnHome = () => {
-        navigate('/menu');
+        window.location.href = '/stocks';
     };
     return {handleReturnHome, isSuccess, setIsSuccess, errorMessage};
 }

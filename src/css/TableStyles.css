@@ -1,0 +1,31 @@
+.table-scrollable {
+    max-height: 556px;
+    overflow-y: auto;
+}
+
+.table-scrollable::-webkit-scrollbar {
+    width: 4px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.table-scrollable::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.table-scrollable::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 10px;
+    border: 2px solid transparent;
+}
+
+.table-scrollable:hover::-webkit-scrollbar-thumb,
+.table-scrollable:active::-webkit-scrollbar-thumb {
+    background-color: #345B6F;
+    border-color: #f1f1f1;
+}
+
+.table-scrollable:hover::-webkit-scrollbar,
+.table-scrollable:active::-webkit-scrollbar {
+    opacity: 1;
+}

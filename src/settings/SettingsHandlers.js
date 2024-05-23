@@ -2,7 +2,6 @@ import {useEffect, useRef, useState} from "react";
 import {RegisterValidators} from "../auth/register/RegisterValidators";
 import {useApiService} from "../core/ApiService";
 import {useApiAuth} from "../core/ApiAuth";
-import {useNavigate} from "react-router-dom";
 
 export function useSettingsHandlers() {
     const [activeMenu, setActiveMenu] = useState('account');
@@ -26,36 +25,43 @@ export function useSettingsHandlers() {
         getUserAvatarByToken,
     } = useApiService();
 
-    const navigate = useNavigate();
-
     const {deleteUser} = useApiAuth();
 
     useEffect(() => {
-        getUserByToken().then(response => {
-            if (response.status === 200) {
-                const {firstName, lastName, username, email, countryOfResidence} = response.data;
-                setAccountData({
-                    firstName,
-                    lastName,
-                    username,
-                    email,
-                    countryOfResidence
-                });
+        const fetchData = async () => {
+            try {
+                const response = await getUserByToken();
+                if (response.status === 200) {
+                    const {firstName, lastName, username, email, countryOfResidence} = response.data;
+                    setAccountData({
+                        firstName,
+                        lastName,
+                        username,
+                        email,
+                        countryOfResidence
+                    });
+                }
+            } catch (error) {
+                console.log(error.response?.data?.message || "An unknown error occurred");
             }
-        }).catch(error => {
-            console.log(error.response.data.message);
-        });
+        };
+
+        fetchData();
     }, []);
 
+
     useEffect(() => {
-        getUserAvatarByToken()
-            .then(response => {
-                const avatar =`data:image/jpeg;base64,${response.data}`;
+        const fetchUserAvatar = async () => {
+            try {
+                const response = await getUserAvatarByToken();
+                const avatar = `data:image/jpeg;base64,${response.data}`;
                 setUserAvatarPreview(avatar);
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error('Failed to fetch user avatar:', err);
-            });
+            }
+        };
+
+        fetchUserAvatar();
     }, []);
 
     const [accountData, setAccountData] = useState({
@@ -169,7 +175,7 @@ export function useSettingsHandlers() {
     const handleDeleteUser = () => {
         deleteUser().then(response => {
             if (response.status === 200) {
-                navigate('/login')
+                window.location.href = '/login';
             }
         }).catch(error => {
             console.log(error.response.data.message);

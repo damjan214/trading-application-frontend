@@ -1,7 +1,6 @@
 import {useState} from "react";
 import {useApiAuth} from "../../core/ApiAuth";
 import {RegisterValidators} from "./RegisterValidators";
-import {useNavigate} from "react-router-dom";
 
 export function useRegisterHandlers() {
 
@@ -18,7 +17,6 @@ export function useRegisterHandlers() {
         country: ''
     });
 
-    const navigate = useNavigate();
     const {register} = useApiAuth();
 
     const {
@@ -54,7 +52,7 @@ export function useRegisterHandlers() {
     };
 
     const handleLogin = () => {
-        navigate('/login')
+        window.location.href = '/login';
     }
     const handlePasswordsChange = (event) => {
         validatePassword(event, setShowAlertInvalidPassword);

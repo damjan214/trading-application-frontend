@@ -60,7 +60,6 @@ function SettingsPage(){
                 handleWithdrawPayment={handleWithdrawPayment}
                 handleLogout={handleLogout}
             />
-
             <div className="container mt-5">
                 <div className="row">
                     <div className="col-md-3 border-end">

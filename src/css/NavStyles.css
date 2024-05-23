@@ -5,7 +5,7 @@
 }
 
 .nav-item {
-    margin-right: 10px; /* space between nav items */
+    margin-right: 10px;
 }
 
 .nav-link {
@@ -26,5 +26,5 @@
 .nav-pills .nav-link:hover,
 .nav-pills .nav-link:focus {
     color: #FFFFFF;
-    background-color: #34C8C1;
+    background-color: #345B6F;
 }

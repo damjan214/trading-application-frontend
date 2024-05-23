@@ -10,7 +10,7 @@ export function useApiService() {
         return axios.post('http://localhost:8080/payment/deposit', {
             amount: amount,
             currency: 'usd'
-        },authConfig(getToken()))
+        }, authConfig(getToken()))
             .then(response => {
                 return response;
             })
@@ -84,7 +84,7 @@ export function useApiService() {
         return axios.post('http://localhost:8080/payment/withdraw', {
             amount: amount,
             currency: 'usd'
-        },authConfig(getToken()))
+        }, authConfig(getToken()))
             .then(response => {
                 return response;
             })
@@ -103,6 +103,31 @@ export function useApiService() {
             });
     }
 
+    const getSymbolsAndNamesMap = () => {
+        return axios.get('http://localhost:8080/file/read', authConfig(getToken()))
+            .then(response => {
+                return response;
+            })
+            .catch(error => {
+                return error;
+            });
+    }
+
+    const getStockDataForToday = (symbol, timestamp) => {
+        return axios.get(`http://localhost:8080/stockdata/today`, {
+            params: {
+                symbol: symbol,
+                timestamp: timestamp
+            },
+            ...authConfig(getToken())
+        })
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                return error.response;
+            });
+    }
     return {
         depositPayment,
         getUserByToken,
@@ -113,5 +138,7 @@ export function useApiService() {
         updatePassword,
         withdrawPayment,
         confirmPayment,
+        getSymbolsAndNamesMap,
+        getStockDataForToday
     };
 }

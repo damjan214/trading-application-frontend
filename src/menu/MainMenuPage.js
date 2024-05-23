@@ -7,9 +7,15 @@ import {Dropdown} from "bootstrap";
 function MainMenuPage() {
     const {
         funds,
+        setFunds,
         fundsLabel,
-        userFirstName,
         userAvatar,
+        showDeposit,
+        showWithdraw,
+        setShowDeposit,
+        setShowWithdraw,
+        withdrawError,
+        setWithdrawError,
         handleFundsChange,
         handleDepositPayment,
         handleWithdrawPayment,
@@ -17,10 +23,10 @@ function MainMenuPage() {
     } = useMainMenuHandlers();
     return (
         <>
-            <nav className="navbar" style={{backgroundColor: '#e9f6f8', borderBottom: '1px solid black'}}>
+            <nav className="navbar" style={{backgroundColor: '#e9f6f8'}}>
                 <div className="container-fluid justify-content-between">
                     <div className="d-flex align-items-center">
-                        <NavLink to="/menu" className="navbar-brand text-white">
+                        <NavLink to="/stocks" className="navbar-brand text-white">
                             <img
                                 src={worldOfStocksLogo}
                                 alt="World of Stocks Logo"
@@ -28,79 +34,137 @@ function MainMenuPage() {
                                 style={{maxWidth: '125px'}}
                             />
                         </NavLink>
-                        <div className="ms-3 dropdown">
+                        <div className="ms-3 dropdown" style={{marginBottom: '50px'}}>
                             <button className="btn btn-secondary dropdown-toggle fw-bold" type="button"
                                     id="balanceDropdown" data-bs-toggle="dropdown" aria-expanded="true"
                                     style={{width: '230px'}}>
-                                Balance: {fundsLabel} USD
+                                Balance available: {fundsLabel} $
                             </button>
                             <ul className="dropdown-menu" aria-labelledby="balanceDropdown">
-                                <li>
-                                    <input
-                                        type="number"
-                                        className="text-center fw-bold me-1 ms-1"
-                                        id="funds"
-                                        value={funds}
-                                        onChange={handleFundsChange}
-                                        required
-                                        placeholder="Enter amount"
-                                    />
-                                </li>
-                                <li className="d-flex justify-content-between">
-                                    <button className="btn btn-primary fw-bold mt-1 ms-1"
-                                            onClick={handleDepositPayment}>Deposit
-                                    </button>
-                                    <button className="btn btn-secondary fw-bold mt-1 me-1"
-                                            onClick={handleWithdrawPayment}>Withdraw
-                                    </button>
+                                <li className="">
+                                    <ul className='nav nav-pills justify-content-between row'>
+                                        <li className="nav-item">
+                                            <a href="#"
+                                               className='nav-link text-center'
+                                               onClick={() => {
+                                                   setShowDeposit(true)
+                                               }}>
+                                                Deposit
+                                            </a>
+                                        </li>
+                                        <li className="nav-item">
+                                            <a href="#"
+                                               className='nav-link text-center'
+                                               onClick={() => {
+                                                   setShowWithdraw(true)
+                                               }}>
+                                                Withdraw
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
                             </ul>
+                            {showDeposit && (
+                                <div className="dropdown dropend">
+                                    <div className="dropdown-menu show" aria-labelledby="balanceDropdown">
+                                        <form className="p-2">
+                                            <div className="mb-2">
+                                                <label htmlFor="depositAmount" className="form-label fw-bold">Deposit
+                                                    amount</label>
+                                                <input type="text" className="form-control" id="depositAmount"
+                                                       value={funds}
+                                                       onChange={(event) => handleFundsChange(event, 'deposit', fundsLabel)}/>
+                                            </div>
+                                            <div className='justify-content-between'>
+                                                <button type="submit" className="btn btn-primary"
+                                                        onClick={handleDepositPayment}
+                                                        disabled={funds === 0 || funds === ''}>Deposit
+                                                </button>
+                                                <button type="button" className="btn btn-secondary ms-5"
+                                                        onClick={() => {
+                                                            setShowDeposit(false)
+                                                            setFunds(0)
+                                                        }}>
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            )}
+                            {showWithdraw && (
+                                <div className="dropdown dropend">
+                                    <div className="dropdown-menu show" aria-labelledby="balanceDropdown">
+                                        <form className="p-2">
+                                            <div className="mb-2">
+                                                <label htmlFor="depositAmount" className="form-label fw-bold">Withdraw
+                                                    amount</label>
+                                                <input
+                                                    type="text"
+                                                    className={`form-control ${withdrawError ? 'input-error' : ''}`}
+                                                    id="depositAmount"
+                                                    value={funds}
+                                                    onChange={(event) => handleFundsChange(event, 'withdraw', fundsLabel)}
+                                                />
+                                            </div>
+                                            <div className='justify-content-between'>
+                                                <button type="submit" className="btn btn-primary"
+                                                        onClick={handleWithdrawPayment}
+                                                        disabled={funds === 0 || funds === '' || withdrawError === true}>Withdraw
+                                                </button>
+                                                <button type="button" className="btn btn-secondary ms-5"
+                                                        onClick={() => {
+                                                            setShowWithdraw(false)
+                                                            setWithdrawError(false)
+                                                            setFunds(0)
+                                                        }}>
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
                     <div className="d-flex flex-column text-center navbar-nav">
-                        <div className="">
+                        <div className="d-flex align-items-center">
                             <img
                                 src={userAvatar}
-                                alt="User avatar"
                                 className="img-fluid rounded-circle mb-2"
                                 style={{
                                     width: '100px',
                                     height: '100px',
                                     borderRadius: '50%',
-                                    marginBottom: '10px'
+                                    marginTop: '10px'
                                 }}
                             />
                         </div>
-                        <label className="mb-1 fw-bold">{userFirstName}</label>
-                        <NavLink to="/settings" className="nav-item nav-link d-flex align-items-center mb-2">
-                            <i className="bi bi-gear-fill" style={{fontSize: '18px', marginRight: '4px'}}></i>
-                            Account settings
-                        </NavLink>
                         <NavLink to="/login" className="nav-item nav-link d-flex align-items-center"
                                  onClick={handleLogout}>
-                            <i className="bi bi-box-arrow-right" style={{fontSize: '18px', marginRight: '4px'}}></i>
+                            <i className="bi bi-box-arrow-right" style={{fontSize: '14px', marginRight: '4px'}}></i>
                             Log out
                         </NavLink>
                     </div>
                 </div>
             </nav>
-
-            <nav className="navbar navbar-expand-lg" style={{backgroundColor: '#e9f6f8', borderBottom:'1px solid black'}}>
+            <nav className="navbar navbar-expand-lg"
+                 style={{backgroundColor: '#e9f6f8', borderBottom: '5px solid #345B6F'}}>
                 <div className="container-fluid">
                     <div className="collapse navbar-collapse justify-content-center" id="navbarNavAltMarkup">
-                        <div className="navbar-nav justify-content-center">
-                            <NavLink className="nav-item nav-link" to="/watchlist">
-                                <i className="bi bi-eye-fill"></i> My watchlist
+                        <div className="navbar-nav">
+                            <NavLink to="/stocks" className="nav-link nav-item" style={{fontSize: '1.5rem', marginRight:'20px'}}>
+                                <i className="bi bi-house-door-fill"></i>
                             </NavLink>
-                            <NavLink className="nav-item nav-link" to="/top-winners">
-                                <i className="bi bi-trophy-fill"></i> Top winners
+                            <NavLink to="/portfolio" className="nav-link nav-item" style={{fontSize: '1.5rem', marginRight:'20px'}}>
+                                <i className="bi bi-pie-chart-fill"></i>
                             </NavLink>
-                            <NavLink className="nav-item nav-link" to="/top-losers">
-                                <i className="bi bi-emoji-frown-fill"></i> Top losers
+                            <NavLink to="/search" className="nav-link nav-item" style={{fontSize: '1.5rem', marginRight:'20px'}}>
+                                <i className="bi bi-search"></i>
                             </NavLink>
-                            <NavLink className="nav-item nav-link" to="/most-owned">
-                                <i className="bi bi-person-fill"></i> Most owned
+                            <NavLink to="/settings" className="nav-link nav-item" style={{fontSize: '1.5rem', marginRight:'20px'}}>
+                                <i className="bi bi-gear-fill"></i>
                             </NavLink>
                         </div>
                     </div>

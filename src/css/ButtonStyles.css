@@ -63,3 +63,12 @@
     opacity: 0.65;
     cursor: not-allowed;
 }
+
+.th-button {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.th-button:hover {
+    background-color: #f8f9fa; /* Light grey, adjust color based on your design */
+}
