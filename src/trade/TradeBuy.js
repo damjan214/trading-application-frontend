@@ -5,6 +5,7 @@ import {useTradeBuyHandlers} from "./TradeBuyHandlers";
 export function TradeBuy({ stock, show, handleClose, fundsLabel }) {
     const {
         amount,
+        tradeError,
         handleAmountChange,
         handleBuy
     } = useTradeBuyHandlers();
@@ -22,19 +23,22 @@ export function TradeBuy({ stock, show, handleClose, fundsLabel }) {
                             type="number"
                             placeholder="Enter amount in USD"
                             value={amount}
-                            onChange={handleAmountChange}
+                            onChange={(event) => handleAmountChange(event, fundsLabel)}
+                            style={{
+                                borderColor: tradeError ? 'red' : undefined,
+                            }}
                         />
                         <Form.Text className="text-muted">
-                            You have {fundsLabel} $ available to invest.
+                            You have ${fundsLabel.toFixed(2)} available to invest.
                         </Form.Text>
                     </Form.Group>
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" style={{fontWeight:"bold"}} onClick={handleClose}>
+                <Button variant="secondary" style={{fontWeight: "bold"}} onClick={handleClose}>
                     CLOSE
                 </Button>
-                <Button variant="primary" style={{fontWeight:"bold"}} onClick={() =>{handleBuy(stock, handleClose)}}>
+                <Button variant="primary" style={{fontWeight: "bold"}} onClick={() => handleBuy(stock, amount, handleClose)} disabled={tradeError || amount === 0}>
                     BUY
                 </Button>
             </Modal.Footer>

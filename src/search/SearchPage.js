@@ -4,6 +4,8 @@ import {useMainMenuHandlers} from "../menu/MainMenuHandlers";
 import StockChart from "../stocks/StocksChart";
 import StockNews from "../stocks/StockNews";
 import {useSearchHandlers} from "./SearchHandlers";
+import {usePortfolioHandlers} from "../portfolio/PortfolioHandlers";
+import {TradeBuy} from "../trade/TradeBuy";
 
 function SearchPage() {
     const {
@@ -25,6 +27,12 @@ function SearchPage() {
         handleSelectStock
     } = useSearchHandlers();
 
+    const {
+        showBuyModal,
+        handleOpenBuyModal,
+        handleCloseBuyModal
+    } = usePortfolioHandlers();
+
     return (
         <>
             <MainMenuPage
@@ -42,7 +50,7 @@ function SearchPage() {
                             style={{marginLeft: "110px", fontWeight: "bold"}}>
                         <i className="bi bi-arrow-left" style={{fontWeight: "bold"}}></i> Back
                     </button>
-                    <button className="btn btn-primary fw-bold mt-2" style={{marginRight: '110px'}}>TRADE</button>
+                    <button className="btn btn-primary fw-bold mt-2" style={{marginRight: '110px'}} onClick={() => handleOpenBuyModal(selectedStock)}>TRADE</button>
                 </div>
             )}
 
@@ -85,6 +93,14 @@ function SearchPage() {
                     </div>
                 )}
             </div>
+            {selectedStock && (
+                <TradeBuy
+                    stock={selectedStock}
+                    show={showBuyModal}
+                    handleClose={handleCloseBuyModal}
+                    fundsLabel={fundsLabel}
+                />
+            )}
         </>
     );
 }

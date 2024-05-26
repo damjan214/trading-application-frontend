@@ -22,9 +22,9 @@ function StocksPage() {
     const { selectedStock, loading, sortedStocks, alphaSortDirection, sortStocks, handleSelectStock} = useStockHandlers();
 
     const {
-        showModal,
-        handleOpenModal,
-        handleCloseModal
+        showBuyModal,
+        handleOpenBuyModal,
+        handleCloseBuyModal
     } = usePortfolioHandlers();
 
     return (
@@ -55,19 +55,19 @@ function StocksPage() {
                         <div className="col-md-4 border-end">
                             <div className="mb-2">
                                 <button onClick={() => sortStocks('value_high')} className="btn btn-secondary"
-                                        style={{fontSize: '14px', marginRight: '1px'}}>
+                                        style={{fontSize: '14px', marginRight: '3px'}}>
                                     <i className="bi bi-arrow-up-circle-fill"></i> High Value
                                 </button>
                                 <button onClick={() => sortStocks('value_low')} className="btn btn-secondary"
-                                        style={{fontSize: '14px', marginRight: '1px'}}>
+                                        style={{fontSize: '14px', marginRight: '3px'}}>
                                     <i className="bi bi-arrow-down-circle-fill"></i> Low Value
                                 </button>
                                 <button onClick={() => sortStocks('change_high')} className="btn btn-secondary"
-                                        style={{fontSize: '14px', marginRight: '1px'}}>
+                                        style={{fontSize: '14px', marginRight: '3px'}}>
                                     <i className="bi bi-sort-numeric-up"></i> Biggest Change
                                 </button>
                                 <button onClick={() => sortStocks('change_low')} className="btn btn-secondary"
-                                        style={{fontSize: '14px', marginRight: '1px'}}>
+                                        style={{fontSize: '14px', marginRight: '3px'}}>
                                     <i className="bi bi-sort-numeric-down"></i> Lowest Change
                                 </button>
                                 <button onClick={() => sortStocks('alpha')} className="btn btn-secondary"
@@ -116,7 +116,7 @@ function StocksPage() {
                                         <li>
                                             <div className="d-flex mb-2 mt-2 justify-content-end">
                                                 <button className="btn btn-primary fw-bold" key={selectedStock.symbol}
-                                                        onClick={() => handleOpenModal(selectedStock)}>
+                                                        onClick={() => handleOpenBuyModal(selectedStock)}>
                                                     TRADE
                                                 </button>
                                             </div>
@@ -134,8 +134,8 @@ function StocksPage() {
             {selectedStock && (
                 <TradeBuy
                     stock={selectedStock}
-                    show={showModal}
-                    handleClose={handleCloseModal}
+                    show={showBuyModal}
+                    handleClose={handleCloseBuyModal}
                     fundsLabel={fundsLabel}
                 />
             )}

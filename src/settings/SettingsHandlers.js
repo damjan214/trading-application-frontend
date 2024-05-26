@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import {RegisterValidators} from "../auth/register/RegisterValidators";
 import {useApiService} from "../core/ApiService";
 import {useApiAuth} from "../core/ApiAuth";
+import {useMainMenuHandlers} from "../menu/MainMenuHandlers";
 
 export function useSettingsHandlers() {
     const [activeMenu, setActiveMenu] = useState('account');
@@ -13,10 +14,13 @@ export function useSettingsHandlers() {
     const [updateError, setUpdateError] = useState(false);
     const [updatePasswordSuccess, setUpdatePasswordSuccess] = useState(false);
     const [updatePasswordError, setUpdatePasswordError] = useState(false);
-    const [updateAvatarSuccess, setUpdateAvatarSuccess] = useState(false);
     const [showAlertInvalidPassword, setShowAlertInvalidPassword] = useState(false);
     const [showAlertMatchingPasswords, setShowAlertMatchingPasswords] = useState(false);
+    const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
+    const [deleteButtonPressed, setDeleteButtonPressed] = useState(false);
     const [file, setFile] = useState(null);
+    const fileInputRef = useRef(null);
+
     const {
         getUserByToken,
         saveUserAvatar,
@@ -24,8 +28,6 @@ export function useSettingsHandlers() {
         updatePassword,
         getUserAvatarByToken,
     } = useApiService();
-
-    const {deleteUser} = useApiAuth();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -105,8 +107,6 @@ export function useSettingsHandlers() {
         handlePasswordChange(event);
     }
 
-    const fileInputRef = useRef(null);
-
     const handleSelectPhoto = () => {
         fileInputRef.current.click();
     };
@@ -157,14 +157,12 @@ export function useSettingsHandlers() {
                 console.log(error.response.data.message);
             });
         } else {
-            setUpdateAvatarSuccess(false);
             const formData = new FormData();
             formData.append('file', file);
             saveUserAvatar(formData).then(response => {
                 if (response.status === 200) {
-                    setUpdateAvatarSuccess(true);
-                    setFileName('');
                     setFile(null);
+                    window.location.reload();
                 }
             }).catch(error => {
                 console.log(error.response.data.message);
@@ -172,15 +170,15 @@ export function useSettingsHandlers() {
         }
     };
 
-    const handleDeleteUser = () => {
-        deleteUser().then(response => {
-            if (response.status === 200) {
-                window.location.href = '/login';
-            }
-        }).catch(error => {
-            console.log(error.response.data.message);
-        });
+    const handleOpenDeleteModal = () => {
+        setDeleteButtonPressed(true);
+        setShowDeleteAccountModal(true);
     };
+
+    const handleCloseDeleteModal = () => {
+        setDeleteButtonPressed(false);
+        setShowDeleteAccountModal(false);
+    }
 
     return {
         activeMenu,
@@ -203,8 +201,11 @@ export function useSettingsHandlers() {
         setUpdatePasswordSuccess,
         updatePasswordError,
         setUpdatePasswordError,
-        updateAvatarSuccess,
-        setUpdateAvatarSuccess,
+        showDeleteAccountModal,
+        setShowDeleteAccountModal,
+        deleteButtonPressed,
+        handleOpenDeleteModal,
+        handleCloseDeleteModal,
         handleAccountChange,
         handlePasswordChange,
         handlePasswordsChange,
@@ -212,6 +213,5 @@ export function useSettingsHandlers() {
         handleSubmit,
         handleSelectPhoto,
         handleFileChange,
-        handleDeleteUser,
     }
 }

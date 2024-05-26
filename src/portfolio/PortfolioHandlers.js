@@ -1,83 +1,185 @@
-import React, {useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
+import {useApiService} from "../core/ApiService";
 
-export function usePortfolioHandlers(){
-    const [sortConfig, setSortConfig] = useState({key: null, direction: 'descending'});
-    const [showBuyModal, setShowBuyModal] = useState(false);
-    const [showSellModal, setShowSellModal] = useState(false);
+export function usePortfolioHandlers() {
+    const [sortConfig, setSortConfig] = useState({key: null, direction: 'ascending'});
+
+    const [detailedStock, setDetailedStock] = useState();
+
     const [selectedStockForBuy, setSelectedStockForBuy] = useState(null);
     const [selectedStockForSale, setSelectedStockForSale] = useState(null);
+    const [selectedStockForCancel, setSelectedStockForCancel] = useState(null);
 
-    const [stocks, setStocks] = useState([
-        {
-            symbol: "TSLA",
-            name: "Tesla Motors, Inc.",
-            price: 181.44,
-            invested: 9998.26,
-            units: 57.96429,
-            avgOpen: 172.49,
-            pl: 535.01,
-            plPercent: 5.35,
-            value: 10533.27
-        },
-        {
-            symbol: "NVDA",
-            name: "NVIDIA Corporation",
-            price: 948.77,
-            invested: 20999.78,
-            units: 23.52529,
-            avgOpen: 892.64701,
-            pl: 1353.95,
-            plPercent: 6.45,
-            value: 22353.73
-        },
-        {
-            symbol: "AAPL",
-            name: "Apple Inc.",
-            price: 280.33,
-            invested: 15000,
-            units: 53.231,
-            avgOpen: 270.55,
-            pl: 520.65,
-            plPercent: 3.47,
-            value: 15520.65
-        },
-        {
-            symbol: "MSFT",
-            name: "Seagate Technology Holdings PLC Ordinary Shares (Ireland)\n",
-            price: 300.99,
-            invested: 12000,
-            units: 40.123,
-            avgOpen: 295.44,
-            pl: 222.89,
-            plPercent: 1.85,
-            value: 12222.89
-        },
-        {
-            symbol: "GOOGL",
-            name: "Alphabet Inc.",
-            price: 2350.44,
-            invested: 23450,
-            units: 10,
-            avgOpen: 2200,
-            pl: 1504.40,
-            plPercent: 6.41,
-            value: 24954.40
+    const [fundsInvested, setFundsInvested] = useState(0);
+    const [fundsInvestedOrders, setFundsInvestedOrders] = useState(0);
+    const [fundsProfitOrLoss, setFundsProfitOrLoss] = useState(0);
+    const [fundsPortfolioValue, setFundsPortfolioValue] = useState(0);
+
+    const [loading, setLoading] = useState(true);
+    const [sellAll, setSellAll] = useState(false);
+
+    const [showBuyModal, setShowBuyModal] = useState(false);
+    const [showSellModal, setShowSellModal] = useState(false);
+    const [showCancelModal, setShowCancelModal] = useState(false);
+
+    const [stocks, setStocks] = useState([]);
+    const [detailedStocks, setDetailedStocks] = useState([]);
+    const [copyOfDetailedStocks, setCopyOfDetailedStocks] = useState([]);
+    const [pendingStocks, setPendingStocks] = useState([]);
+
+    const {
+        getStocksFromPortfolio,
+        getStocksBySymbol,
+        getPendingStocks,
+    } = useApiService();
+
+    useEffect(() => {
+        const fetchPendingStocks = async () => {
+            try {
+                const response = await getPendingStocks();
+                const pendingStocksData = [];
+                let funds = 0;
+                for (const stock of response.data) {
+                    if (stock.stockStatus === 'BOUGHT') {
+                        const stockData = {
+                            timestamp: stock.timestamp,
+                            name: stock.name,
+                            symbol: stock.symbol,
+                            price: stock.currentPrice,
+                            invested: (stock.balanceInvested / 100).toFixed(2),
+                            status: stock.stockStatus
+                        };
+                        funds += stock.balanceInvested / 100;
+                        pendingStocksData.push(stockData);
+                    }
+                    else {
+                        const stockData = {
+                            timestamp: stock.timestamp,
+                            name: stock.name,
+                            symbol: stock.symbol,
+                            price: stock.currentPrice,
+                            invested: stock.quantity.toFixed(5),
+                            status: stock.stockStatus
+                        };
+                        pendingStocksData.push(stockData);
+                    }
+                }
+                setFundsInvestedOrders(funds);
+                setPendingStocks(pendingStocksData);
+            } catch (error) {
+                console.log(error.response?.data?.message || "An unknown error occurred");
+            }
+        };
+
+        fetchPendingStocks();
+    }, []);
+
+    useEffect(() => {
+        const fetchStocks = async () => {
+            try {
+                const response = await getStocksFromPortfolio();
+                const stocksData = [];
+                let invested = 0;
+                let totalProfitOrLoss = 0;
+                let totalPortfolioValue = 0;
+                for (const stock of response.data) {
+                    const amount = stock.balanceInvested / 100;
+                    const stockData = {
+                        symbol: stock.symbol,
+                        name: stock.name,
+                        price: stock.currentPrice,
+                        invested: amount,
+                        units: stock.quantity,
+                        avgOpen: stock.openPriceDay,
+                        pl: stock.profitOrLoss,
+                        plPercent: stock.profitOrLossPercentage,
+                        value: amount + stock.profitOrLoss
+                    };
+                    invested += amount;
+                    totalProfitOrLoss += stock.profitOrLoss;
+                    totalPortfolioValue += amount + stock.profitOrLoss;
+                    stocksData.push(stockData);
+                }
+                setStocks(stocksData);
+                setFundsInvested(invested);
+                setFundsProfitOrLoss(totalProfitOrLoss);
+                setFundsPortfolioValue(totalPortfolioValue);
+                setLoading(false);
+            } catch (error) {
+                console.log(error.response?.data?.message || "An unknown error occurred");
+                setLoading(false)
+            }
+        };
+
+        fetchStocks();
+    }, []);
+
+    useEffect(() => {
+        const fetchDetailedStocks = async () => {
+            try {
+                let detailedStockData = [];
+                let copyOfDetailedStockData = [];
+                for (const stock of stocks) {
+                    const response = await getStocksBySymbol(stock.symbol);
+                    for (const stock of response.data) {
+                        const amount = stock.balanceInvested / 100;
+                        const stockData = {
+                            symbol: stock.symbol,
+                            name: stock.name,
+                            timestamp: stock.timestamp,
+                            amount: amount,
+                            units: stock.quantity,
+                            open: stock.openPriceDay,
+                            pl: stock.profitOrLoss,
+                            plPercent: stock.profitOrLossPercentage,
+                            value: amount + stock.profitOrLoss
+                        };
+                        detailedStockData.push(stockData);
+                        copyOfDetailedStockData.push(stockData);
+                    }
+                }
+                setDetailedStocks(detailedStockData);
+                setCopyOfDetailedStocks(copyOfDetailedStockData);
+            } catch (error) {
+                console.log(error.response?.data?.message || "An unknown error occurred");
+            }
+        };
+
+        fetchDetailedStocks();
+    }, [stocks]);
+
+    useEffect(() => {
+        if (copyOfDetailedStocks && detailedStock) {
+            let listOfDetailedStocks = copyOfDetailedStocks.filter(stock => stock.symbol === detailedStock.symbol);
+            setDetailedStocks(listOfDetailedStocks);
         }
-    ]);
+    }, [copyOfDetailedStocks, detailedStock]);
+
+    const handleSelectDetailedStock = (stock) => {
+        setDetailedStock(stock)
+    }
 
     const handleOpenBuyModal = (stock) => {
         setSelectedStockForBuy(stock);
         setShowBuyModal(true);
     };
 
-    const handleOpenSellModal = (stock) => {
+    const handleOpenSellModal = (stock, sellAll) => {
         setSelectedStockForSale(stock);
+        setSellAll(sellAll)
         setShowSellModal(true);
+    }
+
+    const handleOpenCancelModal = (stock) => {
+        setSelectedStockForCancel(stock);
+        setShowCancelModal(true);
     }
 
     const handleCloseBuyModal = () => setShowBuyModal(false);
 
     const handleCloseSellModal = () => setShowSellModal(false);
+
+    const handleCloseCancelModal = () => setShowCancelModal(false);
 
     function requestSort(key) {
         let direction = 'ascending';
@@ -113,5 +215,61 @@ export function usePortfolioHandlers(){
         return sortableItems;
     }, [stocks, sortConfig]);
 
-    return {sortConfig, sortedStocks, showBuyModal, showSellModal, selectedStockForBuy, selectedStockForSale, requestSort, handleOpenBuyModal, handleOpenSellModal, handleCloseBuyModal, handleCloseSellModal};
+    const sortedDetailedStocks = React.useMemo(() => {
+        if (!sortConfig.key) return detailedStocks;
+        return [...detailedStocks].sort((a, b) => {
+            if (a[sortConfig.key] < b[sortConfig.key]) {
+                return sortConfig.direction === 'ascending' ? -1 : 1;
+            }
+            if (a[sortConfig.key] > b[sortConfig.key]) {
+                return sortConfig.direction === 'ascending' ? 1 : -1;
+            }
+            return 0;
+        });
+    }, [detailedStocks, sortConfig]);
+
+    function formatTimestamp(isoString) {
+        const date = new Date(isoString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // getMonth is zero-indexed
+        const year = date.getFullYear();
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${day}/${month}/${year} - ${hours}:${minutes}`;
+    }
+
+    function isDisabled(stockSymbol, pendingStocks) {
+        return pendingStocks.some(stock => stock.symbol === stockSymbol && stock.status === 'SOLD');
+    }
+
+    return {
+        sortConfig,
+        sortedStocks,
+        sortedDetailedStocks,
+        sellAll,
+        showBuyModal,
+        showSellModal,
+        showCancelModal,
+        selectedStockForBuy,
+        selectedStockForSale,
+        selectedStockForCancel,
+        detailedStock,
+        setDetailedStock,
+        loading,
+        fundsInvested,
+        fundsInvestedOrders,
+        fundsProfitOrLoss,
+        fundsPortfolioValue,
+        pendingStocks,
+        formatTimestamp,
+        isDisabled,
+        requestSort,
+        handleOpenBuyModal,
+        handleOpenSellModal,
+        handleCloseBuyModal,
+        handleCloseSellModal,
+        handleOpenCancelModal,
+        handleCloseCancelModal,
+        handleSelectDetailedStock
+    };
 }

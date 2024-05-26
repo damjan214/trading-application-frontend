@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { useTradeSellHandlers } from "./TradeSellHandlers";
 
-export function TradeSell({ stock, show, handleClose, fundsLabel }) {
+export function TradeSell({ stock, show, handleClose, sellAll }) {
     const {
         amount,
         handleSell,
@@ -17,7 +17,7 @@ export function TradeSell({ stock, show, handleClose, fundsLabel }) {
             <Modal.Body>
                 <Form>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>Do you want to sell all? You will get {stock.value} $.</Form.Label>
+                        <Form.Label>Do you want to sell all? You will get {stock.value.toFixed(2)} $.</Form.Label>
                     </Form.Group>
                 </Form>
             </Modal.Body>
@@ -25,7 +25,7 @@ export function TradeSell({ stock, show, handleClose, fundsLabel }) {
                 <Button variant="secondary" style={{fontWeight:"bold"}} onClick={handleClose}>
                     CLOSE
                 </Button>
-                <Button variant="danger" style={{fontWeight:"bold"}} onClick={handleSell}>
+                <Button variant="danger" style={{fontWeight:"bold"}} onClick={() => handleSell(stock, handleClose, sellAll)}>
                     SELL
                 </Button>
             </Modal.Footer>

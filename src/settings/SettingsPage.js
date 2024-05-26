@@ -3,6 +3,8 @@ import {useMainMenuHandlers} from '../menu/MainMenuHandlers';
 import MainMenuPage from "../menu/MainMenuPage";
 import {useSettingsHandlers} from "./SettingsHandlers";
 import {countries} from "countries-list";
+import DeleteAccount from "../auth/delete/DeleteAccount";
+import {usePortfolioHandlers} from "../portfolio/PortfolioHandlers";
 
 function SettingsPage(){
 
@@ -27,8 +29,10 @@ function SettingsPage(){
         updatePasswordError,
         setUpdatePasswordError,
         updatePasswordErrorMessage,
-        updateAvatarSuccess,
-        setUpdateAvatarSuccess,
+        showDeleteAccountModal,
+        deleteButtonPressed,
+        handleOpenDeleteModal,
+        handleCloseDeleteModal,
         handleAccountChange,
         handlePasswordChange,
         handlePasswordsChange,
@@ -36,7 +40,6 @@ function SettingsPage(){
         handleSubmit,
         handleSelectPhoto,
         handleFileChange,
-        handleDeleteUser,
     } = useSettingsHandlers();
 
     const {
@@ -78,21 +81,15 @@ function SettingsPage(){
                             </li>
                             <li className="nav-item mb-2">
                                 <a href="#" className={`nav-link ${activeMenu === 'avatar' ? 'active' : ''}`}
-                                   onClick={() => {setActiveMenu('avatar'); setUpdateAvatarSuccess(false)}}>
+                                   onClick={() => {setActiveMenu('avatar'); }}>
                                     Profile Picture
-                                </a>
-                            </li>
-                            <li className="nav-item mb-2">
-                                <a href="#" className={`nav-link ${activeMenu === 'delete' ? 'active' : ''}`}
-                                      onClick={() => setActiveMenu('delete')}>
-                                    Delete Account
                                 </a>
                             </li>
                         </ul>
                     </div>
                     <div className="col-md-9">
                         {activeMenu === 'account' ? (
-                            <form onSubmit={handleSubmit}>
+                            <div>
                                 {Object.entries(accountData).filter(([key]) => key !== 'countryOfResidence').map(([key, value]) => (
                                     <div key={key} className="mb-3">
                                         <label htmlFor={key} className="form-label">
@@ -129,7 +126,23 @@ function SettingsPage(){
                                     </select>
                                 </div>
 
-                                <button type="submit" className="btn btn-primary">Save Changes</button>
+                                <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Save Changes</button>
+                                <button
+                                    className="btn btn-danger"
+                                    onClick={handleOpenDeleteModal}
+                                    style={{minWidth: "800px", marginLeft:"44px"}}
+                                >
+                                    Close my WORLD of STOCKS account
+                                </button>
+                                {(deleteButtonPressed) && (
+                                    <div className="mt-3">
+                                        <DeleteAccount
+                                            handleShow={showDeleteAccountModal}
+                                            handleClose={handleCloseDeleteModal}
+                                            fundsLabel={fundsLabel}
+                                        />
+                                    </div>
+                                )}
                                 {updateSuccess && (
                                     <div
                                         className="alert alert-success mt-2 d-flex justify-content-between align-items-center"
@@ -148,7 +161,7 @@ function SettingsPage(){
                                         className='align-items-center'>{updateErrorMessage}</span>
                                     </div>
                                 )}
-                            </form>
+                            </div>
                         ) : activeMenu === 'password' ? (
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-3">
@@ -262,32 +275,10 @@ function SettingsPage(){
                                         >
                                             Save
                                         </button>
-                                        {updateAvatarSuccess && (
-                                            <div
-                                                className="alert alert-success mt-2 d-flex justify-content-between align-items-center"
-                                                role="alert"
-                                                style={{fontSize: '0.8rem', padding: '5px 10px'}}>
-                                    <span
-                                        className='align-items-center'>{'New photo saved!'}</span>
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
                             </div>
-                        ) : activeMenu === 'delete' ? (
-                            <div className="d-flex flex-column align-items-center mt-3">
-                                <div className="alert alert-danger text-center w-75"
-                                     style={{fontSize: '1rem', padding: '10px'}}>
-                                    <strong>Are you sure you want to delete this account?</strong>
-                                </div>
-                                <button
-                                    className="btn btn-danger btn-lg"
-                                    onClick={handleDeleteUser}
-                                >
-                                    Yes, delete my account
-                                </button>
-                            </div>
-                        ) : null}
+                        )  : null}
                     </div>
                 </div>
             </div>

@@ -10,15 +10,18 @@ export function useMainMenuHandlers() {
     const [showDeposit, setShowDeposit] = useState(false);
     const [showWithdraw, setShowWithdraw] = useState(false);
     const [withdrawError, setWithdrawError] = useState(false);
+    const [depositError, setDepositError] = useState(false);
+    const [marketStatus, setMarketStatus] = useState('');
 
     const {
         depositPayment,
         withdrawPayment,
         getUserAvatarByToken,
-        getUserPortfolioBalance
+        getUserPortfolioBalance,
+        getMarketStatus
     } = useApiService();
 
-    const {validateWithdraw} = useMainMenuValidators();
+    const {validateWithdraw, validateDeposit} = useMainMenuValidators();
 
     const {logout} = useApiAuth();
 
@@ -50,20 +53,36 @@ export function useMainMenuHandlers() {
 
         fetchUserPortfolioBalance();
     }, []);
+
+    useEffect(() => {
+        const fetchMarketStatus = async () => {
+            try {
+                const response = await getMarketStatus();
+                if (response.status === 200) {
+                    if (response.data.isOpen === false) {
+                        setMarketStatus('CLOSED')
+                    } else {
+                        setMarketStatus('OPEN')
+                    }
+                }
+            } catch (error) {
+                console.log(error.response?.data?.message || "An unknown error occurred");
+            }
+        };
+
+        fetchMarketStatus();
+    }, []);
+
     const handleFundsChange = (event, paymentType, fundsValue) => {
         var value = event.target.value;
+
         if (paymentType === 'withdraw') {
             validateWithdraw(value, fundsValue, setWithdrawError);
         }
-        var intValue = parseInt(value, 10);
-
-        if (isNaN(intValue) || intValue < 1) {
-            event.target.value = '';
-            setFunds(event.target.value);
-        } else {
-            event.target.value = intValue;
-            setFunds(event.target.value);
+        if (paymentType === 'deposit') {
+            validateDeposit(value, setDepositError)
         }
+        setFunds(value);
     };
 
     const handleDepositPayment = (event) => {
@@ -108,6 +127,9 @@ export function useMainMenuHandlers() {
         setShowWithdraw,
         withdrawError,
         setWithdrawError,
+        depositError,
+        setDepositError,
+        marketStatus,
         handleFundsChange,
         handleDepositPayment,
         handleWithdrawPayment,

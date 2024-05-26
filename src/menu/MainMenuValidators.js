@@ -3,7 +3,9 @@
 export function useMainMenuValidators(){
 
     const validateWithdraw = (value, fundsValue, setWithdrawError) => {
-        if (value > fundsValue) {
+        const hasLeadingZeros = value.match(/^0[0-9].*$/);
+
+        if (value > fundsValue || value <= 0 || isNaN(value) || hasLeadingZeros) {
             setWithdrawError(true);
         }
         else {
@@ -11,5 +13,16 @@ export function useMainMenuValidators(){
         }
     }
 
-    return {validateWithdraw};
+    const validateDeposit = (value, setDepositError) => {
+        const hasLeadingZeros = value.match(/^0[0-9].*$/);
+
+        if(value <= 0 || isNaN(value) || hasLeadingZeros){
+            setDepositError(true);
+        }
+        else {
+            setDepositError(false);
+            }
+    }
+
+    return {validateWithdraw, validateDeposit};
 }

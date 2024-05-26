@@ -16,6 +16,9 @@ function MainMenuPage() {
         setShowWithdraw,
         withdrawError,
         setWithdrawError,
+        depositError,
+        setDepositError,
+        marketStatus,
         handleFundsChange,
         handleDepositPayment,
         handleWithdrawPayment,
@@ -37,7 +40,7 @@ function MainMenuPage() {
                         <div className="ms-3 dropdown" style={{marginBottom: '50px'}}>
                             <button className="btn btn-secondary dropdown-toggle fw-bold" type="button"
                                     id="balanceDropdown" data-bs-toggle="dropdown" aria-expanded="true"
-                                    style={{width: '230px'}}>
+                                    style={{width: '240px'}}>
                                 Balance available: {fundsLabel} $
                             </button>
                             <ul className="dropdown-menu" aria-labelledby="balanceDropdown">
@@ -71,18 +74,22 @@ function MainMenuPage() {
                                             <div className="mb-2">
                                                 <label htmlFor="depositAmount" className="form-label fw-bold">Deposit
                                                     amount</label>
-                                                <input type="text" className="form-control" id="depositAmount"
+                                                <input type="number"
+                                                       className={`form-control ${depositError ? 'input-error' : ''}`}
+                                                       id="depositAmount"
                                                        value={funds}
                                                        onChange={(event) => handleFundsChange(event, 'deposit', fundsLabel)}/>
                                             </div>
                                             <div className='justify-content-between'>
                                                 <button type="submit" className="btn btn-primary"
                                                         onClick={handleDepositPayment}
-                                                        disabled={funds === 0 || funds === ''}>Deposit
+                                                        disabled={funds === 0 || funds === '' || depositError}>Deposit
                                                 </button>
-                                                <button type="button" className="btn btn-secondary ms-5"
+                                                <button type="button" className="btn btn-secondary"
+                                                        style={{marginLeft: '58px'}}
                                                         onClick={() => {
                                                             setShowDeposit(false)
+                                                            setDepositError(false)
                                                             setFunds(0)
                                                         }}>
                                                     Cancel
@@ -100,7 +107,7 @@ function MainMenuPage() {
                                                 <label htmlFor="depositAmount" className="form-label fw-bold">Withdraw
                                                     amount</label>
                                                 <input
-                                                    type="text"
+                                                    type="number"
                                                     className={`form-control ${withdrawError ? 'input-error' : ''}`}
                                                     id="depositAmount"
                                                     value={funds}
@@ -127,7 +134,7 @@ function MainMenuPage() {
                             )}
                         </div>
                     </div>
-
+                    <label className="text-center fw-bold" style={{marginRight:"300px", backgroundColor:"#345B6F", color:"#FFFFFF", width:"150px",borderRadius:"5px"}}>MARKET STATUS<br></br>{marketStatus}</label>
                     <div className="d-flex flex-column text-center navbar-nav">
                         <div className="d-flex align-items-center">
                             <img
