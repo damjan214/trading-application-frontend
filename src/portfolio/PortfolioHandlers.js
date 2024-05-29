@@ -23,6 +23,7 @@ export function usePortfolioHandlers() {
     const [showCancelModal, setShowCancelModal] = useState(false);
 
     const [stocks, setStocks] = useState([]);
+    const [numberOfStocks, setNumberOfStocks] = useState(null);
     const [detailedStocks, setDetailedStocks] = useState([]);
     const [copyOfDetailedStocks, setCopyOfDetailedStocks] = useState([]);
     const [pendingStocks, setPendingStocks] = useState([]);
@@ -104,14 +105,21 @@ export function usePortfolioHandlers() {
                 setFundsInvested(invested);
                 setFundsProfitOrLoss(totalProfitOrLoss);
                 setFundsPortfolioValue(totalPortfolioValue);
+                setNumberOfStocks(stocksData.length);
                 setLoading(false);
             } catch (error) {
                 console.log(error.response?.data?.message || "An unknown error occurred");
-                setLoading(false)
+                setLoading(false);
             }
         };
 
-        fetchStocks();
+        const intervalId = setInterval(() => {
+            fetchStocks();
+        }, 1000); // Interval set at 1000 milliseconds (1 second)
+
+        return () => {
+            clearInterval(intervalId); // Clear the interval on component unmount
+        };
     }, []);
 
     useEffect(() => {
@@ -261,6 +269,7 @@ export function usePortfolioHandlers() {
         fundsProfitOrLoss,
         fundsPortfolioValue,
         pendingStocks,
+        numberOfStocks,
         formatTimestamp,
         isDisabled,
         requestSort,

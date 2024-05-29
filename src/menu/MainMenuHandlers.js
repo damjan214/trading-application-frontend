@@ -18,7 +18,8 @@ export function useMainMenuHandlers() {
         withdrawPayment,
         getUserAvatarByToken,
         getUserPortfolioBalance,
-        getMarketStatus
+        getMarketStatus,
+        changeMarketStatus,
     } = useApiService();
 
     const {validateWithdraw, validateDeposit} = useMainMenuValidators();
@@ -59,7 +60,7 @@ export function useMainMenuHandlers() {
             try {
                 const response = await getMarketStatus();
                 if (response.status === 200) {
-                    if (response.data.isOpen === false) {
+                    if (response.data.status === 'CLOSED') {
                         setMarketStatus('CLOSED')
                     } else {
                         setMarketStatus('OPEN')
@@ -72,6 +73,19 @@ export function useMainMenuHandlers() {
 
         fetchMarketStatus();
     }, []);
+
+    const handleMarketStatusChange = (event) => {
+        event.preventDefault();
+        changeMarketStatus().then(response => {
+            if (response.status === 200) {
+                console.log(response.data.status);
+                setMarketStatus(response.data.status)
+                window.location.reload();
+            }
+        }).catch(error => {
+            console.log(error.response.data.message);
+        });
+    }
 
     const handleFundsChange = (event, paymentType, fundsValue) => {
         var value = event.target.value;
@@ -133,6 +147,7 @@ export function useMainMenuHandlers() {
         handleFundsChange,
         handleDepositPayment,
         handleWithdrawPayment,
-        handleLogout
+        handleLogout,
+        handleMarketStatusChange
     };
 }

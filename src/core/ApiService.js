@@ -1,15 +1,10 @@
 import axios from 'axios';
 import {useAuthConfig} from "../auth/config/AuthConfig";
 import {useLocalStorageService} from "../services/LocalStorageService";
-import {FinnhubConfig} from "../auth/config/FinnhubConfig";
 
 export function useApiService() {
     const {authConfig, paymentConfig} = useAuthConfig();
     const {getToken} = useLocalStorageService();
-    const {finnhubToken} = FinnhubConfig();
-
-    const FINNHUB_MARKET = 'https://finnhub.io/api/v1/stock/market-status?exchange=US';
-    const TOKEN_URL = '&token=';
 
     const depositPayment = (amount) => {
         return axios.post('http://localhost:8080/payment/deposit', {
@@ -201,7 +196,16 @@ export function useApiService() {
     }
 
     const getMarketStatus = () => {
-        return axios.get(FINNHUB_MARKET + TOKEN_URL + finnhubToken)
+        return axios.get('http://localhost:8080/stockdata/status', authConfig(getToken()))
+            .then(response => {
+                return response;
+            })
+            .catch(error => {
+                return error;
+            });
+    }
+    const changeMarketStatus = () => {
+        return axios.get('http://localhost:8080/stockdata/status/change', authConfig(getToken()))
             .then(response => {
                 return response;
             })
@@ -249,6 +253,7 @@ export function useApiService() {
         sellAllStocksBySymbol,
         getPendingStocks,
         getMarketStatus,
+        changeMarketStatus,
         cancelBuyStockPending,
         cancelSellStockPending
     };

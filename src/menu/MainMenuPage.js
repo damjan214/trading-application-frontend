@@ -23,6 +23,7 @@ function MainMenuPage() {
         handleDepositPayment,
         handleWithdrawPayment,
         handleLogout,
+        handleMarketStatusChange
     } = useMainMenuHandlers();
     return (
         <>
@@ -134,7 +135,21 @@ function MainMenuPage() {
                             )}
                         </div>
                     </div>
-                    <label className="text-center fw-bold" style={{marginRight:"300px", backgroundColor:"#345B6F", color:"#FFFFFF", width:"150px",borderRadius:"5px"}}>MARKET STATUS<br></br>{marketStatus}</label>
+                    <div className="d-flex">
+                        <label className="text-center fw-bold" style={{
+                            marginRight: "10px",
+                            backgroundColor: "#345B6F",
+                            color: "#FFFFFF",
+                            width: "150px",
+                            borderRadius: "5px"
+                        }}>MARKET STATUS<br></br>{marketStatus}</label>
+                        <button className="btn-primary fw-bold" style={{
+                            marginRight: "310px",
+                            width: "150px",
+                            borderRadius: "5px"
+                        }}
+                        onClick={handleMarketStatusChange}>CHANGE STATUS</button>
+                    </div>
                     <div className="d-flex flex-column text-center navbar-nav">
                         <div className="d-flex align-items-center">
                             <img

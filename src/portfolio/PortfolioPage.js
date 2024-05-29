@@ -38,6 +38,7 @@ function PortfolioPage() {
         fundsProfitOrLoss,
         fundsPortfolioValue,
         pendingStocks,
+        numberOfStocks,
         isDisabled,
         formatTimestamp,
         requestSort,
@@ -76,7 +77,7 @@ function PortfolioPage() {
                 <div style={{backgroundColor: "#e9f6f8"}}>
                     <div className="container d-flex flex-column" style={{minHeight: '72vh'}}>
                         <div className="d-flex justify-content-between">
-                            <h2 className="mb-4">My Portfolio</h2>
+                            <h2 className="mb-4">My Portfolio ({numberOfStocks})</h2>
                             {
                                 detailedStock && (
                                     <button className="btn btn-secondary mb-2 mt-2" onClick={() => setDetailedStock(null)}
@@ -148,8 +149,12 @@ function PortfolioPage() {
                                                 <td className="text-center">${stock.invested.toFixed(2)}</td>
                                                 <td className="text-center">{stock.units.toFixed(5)}</td>
                                                 <td className="text-center">${stock.avgOpen.toFixed(2)}</td>
-                                                <td className={`text-${stock.pl >= 0 ? 'success' : 'danger'} text-center`}>${stock.pl.toFixed(2)}</td>
-                                                <td className={`text-${stock.plPercent >= 0 ? 'success' : 'danger'} text-center`}>{stock.plPercent.toFixed(2)}%</td>
+                                                <td className={`text-${stock.pl.toFixed(2) > 0 ? 'success' : stock.pl.toFixed(2) < 0 ? 'danger' : 'muted'} text-center`}>
+                                                    ${stock.pl.toFixed(2)}
+                                                </td>
+                                                <td className={`text-${stock.plPercent.toFixed(2) > 0 ? 'success' : stock.plPercent.toFixed(2) < 0 ? 'danger' : 'muted'} text-center`}>
+                                                    {stock.plPercent.toFixed(2)}%
+                                                </td>
                                                 <td className="text-center">${stock.value.toFixed(2)}</td>
                                                 <td className="text-center">
                                                     <button className="btn btn-primary fw-bold"
@@ -213,8 +218,12 @@ function PortfolioPage() {
                                                 <td className="text-center">{detailedStockFromMap.amount}</td>
                                                 <td className="text-center">{detailedStockFromMap.units.toFixed(5)}</td>
                                                 <td className="text-center">{detailedStockFromMap.open.toFixed(2)}</td>
-                                                <td className="text-center text-success">{detailedStockFromMap.pl.toFixed(2)}</td>
-                                                <td className="text-center text-success">{detailedStockFromMap.plPercent.toFixed(2)}%</td>
+                                                <td className={`text-center ${detailedStockFromMap.pl.toFixed(2) > 0 ? 'text-success' : detailedStockFromMap.pl.toFixed(2) < 0 ? 'text-danger' : 'text-muted'}`}>
+                                                    ${detailedStockFromMap.pl.toFixed(2)}
+                                                </td>
+                                                <td className={`text-center ${detailedStockFromMap.plPercent.toFixed(2) > 0 ? 'text-success' : detailedStockFromMap.plPercent.toFixed(2) < 0 ? 'text-danger' : 'text-muted'}`}>
+                                                    {detailedStockFromMap.plPercent.toFixed(2)}%
+                                                </td>
                                                 <td className="text-center">
                                                     <button className="btn btn-secondary fw-bold"
                                                             onClick={() => handleOpenSellModal(detailedStockFromMap, false)}>SELL
@@ -227,7 +236,7 @@ function PortfolioPage() {
                                 )}
                             </table>
                         </div>
-                        {!detailedStock && pendingStocks.length > 0 ?(
+                        {!detailedStock && pendingStocks.length > 0 ? (
                             <>
                                 <h2 className="mb-4">Orders</h2>
                                 <div className="table-responsive table-scrollable mt-2">
