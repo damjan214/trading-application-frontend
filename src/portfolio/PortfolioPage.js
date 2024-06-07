@@ -39,6 +39,7 @@ function PortfolioPage() {
         fundsPortfolioValue,
         pendingStocks,
         numberOfStocks,
+        numberOfPendingStocks,
         isDisabled,
         formatTimestamp,
         requestSort,
@@ -238,12 +239,12 @@ function PortfolioPage() {
                         </div>
                         {!detailedStock && pendingStocks.length > 0 ? (
                             <>
-                                <h2 className="mb-4">Orders</h2>
+                                <h2 className="mb-4">Orders ({numberOfPendingStocks})</h2>
                                 <div className="table-responsive table-scrollable mt-2">
                                     <table className="table">
                                         <thead>
                                         <tr>
-                                            <th className="text-center">Timestamp</th>
+                                            <th className="text-center">Date and Time</th>
                                             <th className="text-center">Asset</th>
                                             <th className="text-center">Current</th>
                                             <th className="text-center">Invested</th>

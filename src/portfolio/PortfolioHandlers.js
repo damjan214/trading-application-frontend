@@ -27,6 +27,7 @@ export function usePortfolioHandlers() {
     const [detailedStocks, setDetailedStocks] = useState([]);
     const [copyOfDetailedStocks, setCopyOfDetailedStocks] = useState([]);
     const [pendingStocks, setPendingStocks] = useState([]);
+    const [numberOfPendingStocks, setNumberOfPendingStocks] = useState(null);
 
     const {
         getStocksFromPortfolio,
@@ -67,6 +68,7 @@ export function usePortfolioHandlers() {
                 }
                 setFundsInvestedOrders(funds);
                 setPendingStocks(pendingStocksData);
+                setNumberOfPendingStocks(pendingStocksData.length)
             } catch (error) {
                 console.log(error.response?.data?.message || "An unknown error occurred");
             }
@@ -270,6 +272,7 @@ export function usePortfolioHandlers() {
         fundsPortfolioValue,
         pendingStocks,
         numberOfStocks,
+        numberOfPendingStocks,
         formatTimestamp,
         isDisabled,
         requestSort,

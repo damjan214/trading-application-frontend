@@ -6,8 +6,10 @@ export function useApiService() {
     const {authConfig, paymentConfig} = useAuthConfig();
     const {getToken} = useLocalStorageService();
 
+    const SERVER_URL = 'http://localhost:8080';
+
     const depositPayment = (amount) => {
-        return axios.post('http://localhost:8080/payment/deposit', {
+        return axios.post( SERVER_URL + '/payment/deposit', {
             amount: amount,
             currency: 'usd'
         }, authConfig(getToken()))
@@ -20,7 +22,7 @@ export function useApiService() {
     }
 
     const getUserAvatarByToken = () => {
-        return axios.get('http://localhost:8080/avatar/get', authConfig(getToken()))
+        return axios.get(SERVER_URL + '/avatar/get', authConfig(getToken()))
             .then(response => {
                 return response;
 
@@ -31,7 +33,7 @@ export function useApiService() {
     }
 
     const getUserByToken = () => {
-        return axios.get('http://localhost:8080/user/get', authConfig(getToken()))
+        return axios.get(SERVER_URL + '/user/get', authConfig(getToken()))
             .then(response => {
                 return response;
             })
@@ -41,7 +43,7 @@ export function useApiService() {
     }
 
     const getUserPortfolioBalance = () => {
-        return axios.get('http://localhost:8080/portfolio/balance', authConfig(getToken()))
+        return axios.get(SERVER_URL + '/portfolio/balance', authConfig(getToken()))
             .then(response => {
                 return response;
             })
@@ -51,7 +53,7 @@ export function useApiService() {
     }
 
     const saveUserAvatar = (formData) => {
-        return axios.post('http://localhost:8080/avatar/save', formData, authConfig(getToken()))
+        return axios.post(SERVER_URL + '/avatar/save', formData, authConfig(getToken()))
             .then(response => {
                 return response;
             })
@@ -61,7 +63,7 @@ export function useApiService() {
     }
 
     const updateUser = (userData) => {
-        return axios.put('http://localhost:8080/user/update/data', userData, authConfig(getToken()))
+        return axios.put(SERVER_URL + '/user/update/data', userData, authConfig(getToken()))
             .then(response => {
                 return response;
             })
@@ -71,7 +73,7 @@ export function useApiService() {
     }
 
     const updatePassword = (passwordData) => {
-        return axios.put('http://localhost:8080/user/update/password', passwordData, authConfig(getToken()))
+        return axios.put(SERVER_URL + '/user/update/password', passwordData, authConfig(getToken()))
             .then(response => {
                 return response;
             })
@@ -81,7 +83,7 @@ export function useApiService() {
     }
 
     const withdrawPayment = (amount) => {
-        return axios.post('http://localhost:8080/payment/withdraw', {
+        return axios.post(SERVER_URL + '/payment/withdraw', {
             amount: amount,
             currency: 'usd'
         }, authConfig(getToken()))
@@ -94,7 +96,7 @@ export function useApiService() {
     }
 
     const confirmPayment = (sessionId) => {
-        return axios.get('http://localhost:8080/payment/confirm', paymentConfig(getToken(), sessionId))
+        return axios.get(SERVER_URL + '/payment/confirm', paymentConfig(getToken(), sessionId))
             .then(response => {
                 return response;
             })
@@ -104,7 +106,7 @@ export function useApiService() {
     }
 
     const getSymbolsAndNamesMap = () => {
-        return axios.get('http://localhost:8080/symbols/get', authConfig(getToken()))
+        return axios.get(SERVER_URL + '/symbols/get', authConfig(getToken()))
             .then(response => {
                 return response;
             })
@@ -113,8 +115,8 @@ export function useApiService() {
             });
     }
 
-    const getStockDataForToday = (symbol, timestamp) => {
-        return axios.get(`http://localhost:8080/stockdata/today`, {
+    const getStockDataForToday = (symbol) => {
+        return axios.get(SERVER_URL + `/stockdata/today`, {
             params: {
                 symbol: symbol,
             },
@@ -129,7 +131,7 @@ export function useApiService() {
     }
 
     const getStocksFromPortfolio = () => {
-        return axios.get('http://localhost:8080/stocks', authConfig(getToken()))
+        return axios.get(SERVER_URL + '/stocks', authConfig(getToken()))
             .then(response => {
                 return response;
             })
@@ -139,7 +141,7 @@ export function useApiService() {
     }
 
     const getStocksBySymbol = (symbol) => {
-        return axios.get(`http://localhost:8080/stocks/symbol`, {
+        return axios.get(SERVER_URL + `/stocks/symbol`, {
             params: {
                 symbol: symbol
             },
@@ -154,7 +156,7 @@ export function useApiService() {
     }
 
     const buyStock = (stockData) => {
-        return axios.post('http://localhost:8080/stocks/buy', stockData, authConfig(getToken()))
+        return axios.post(SERVER_URL + '/stocks/buy', stockData, authConfig(getToken()))
             .then(response => {
                 return response;
             })
@@ -164,7 +166,7 @@ export function useApiService() {
     }
 
     const sellStock = (stockData) => {
-        return axios.post('http://localhost:8080/stocks/sell', stockData, authConfig(getToken()))
+        return axios.post(SERVER_URL + '/stocks/sell', stockData, authConfig(getToken()))
             .then(response => {
                 return response;
             })
@@ -174,7 +176,7 @@ export function useApiService() {
     }
 
     const sellAllStocksBySymbol = (symbol) => {
-        return axios.post('http://localhost:8080/stocks/sell/all/symbol', {
+        return axios.post(SERVER_URL + '/stocks/sell/all/symbol', {
             symbol: symbol
         }, authConfig(getToken()))
             .then(response => {
@@ -186,7 +188,7 @@ export function useApiService() {
     }
 
     const getPendingStocks = () => {
-        return axios.get('http://localhost:8080/pending/stocks', authConfig(getToken()))
+        return axios.get(SERVER_URL + '/pending/stocks', authConfig(getToken()))
             .then(response => {
                 return response;
             })
@@ -196,7 +198,7 @@ export function useApiService() {
     }
 
     const getMarketStatus = () => {
-        return axios.get('http://localhost:8080/stockdata/status', authConfig(getToken()))
+        return axios.get(SERVER_URL + '/stockdata/status', authConfig(getToken()))
             .then(response => {
                 return response;
             })
@@ -205,7 +207,7 @@ export function useApiService() {
             });
     }
     const changeMarketStatus = () => {
-        return axios.get('http://localhost:8080/stockdata/status/change', authConfig(getToken()))
+        return axios.get(SERVER_URL + '/stockdata/status/change', authConfig(getToken()))
             .then(response => {
                 return response;
             })
@@ -215,7 +217,7 @@ export function useApiService() {
     }
 
     const cancelBuyStockPending = (stockData) => {
-        return axios.post('http://localhost:8080/pending/cancel/buy', stockData, authConfig(getToken()))
+        return axios.post(SERVER_URL + '/pending/cancel/buy', stockData, authConfig(getToken()))
             .then(response => {
                 return response;
             })
@@ -225,7 +227,7 @@ export function useApiService() {
     }
 
     const cancelSellStockPending = (stockData) => {
-        return axios.post('http://localhost:8080/pending/cancel/sell', stockData, authConfig(getToken()))
+        return axios.post(SERVER_URL + '/pending/cancel/sell', stockData, authConfig(getToken()))
             .then(response => {
                 return response;
             })
